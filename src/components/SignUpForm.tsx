@@ -9,7 +9,7 @@ function SignUpForm() {
                 </div>
                 <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta">
                     <input placeholder="Username" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="username" type="text" />
-                    <input placeholder="Email" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="email" type="email" />
+                    <input placeholder="Email" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="email" type="email" /> 
                     <input placeholder="Password" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="password" type="password" />
                     <input placeholder="Confirm Password" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="confirm-password" type="password" />
                     <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Sign up</button>

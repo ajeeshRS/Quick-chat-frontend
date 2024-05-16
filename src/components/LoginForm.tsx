@@ -11,6 +11,7 @@ function LoginForm() {
                 <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta">
                     <input placeholder="Email" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="email" type="email" />
                     <input placeholder="Password" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" name="password" type="password" />
+                    <p className="w-full flex justify-end py-2 pr-2 text-sm hover:underline font-mukta"><Link to={"/forgot-password"}>Forgot password ?</Link></p>
                     <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Log in</button>
                 </form>
                 {/* Divider */}
