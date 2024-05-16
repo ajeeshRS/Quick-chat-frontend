@@ -1,7 +1,8 @@
+import LoginForm from "../components/LoginForm"
 
 function LoginPage() {
   return (
-    <div>This is the login page of quick chat</div>
+    <LoginForm />
   )
 }
 
