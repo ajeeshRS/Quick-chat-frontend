@@ -3,10 +3,24 @@ import googleIcon from "../assets/googleIcon.svg"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, signUpFormData } from "../validations/signUpSchema"
+import { AUTH_API } from "../api/api"
+import toast from "react-hot-toast"
 
 function SignUpForm() {
 
-    const { handleSubmit, register, formState: { errors } } = useForm<signUpFormData>({ resolver: zodResolver(signUpSchema) })
+    const { handleSubmit, register, reset, formState: { errors } } = useForm<signUpFormData>({ resolver: zodResolver(signUpSchema) })
+
+    const handleSubmission = async (data: object) => {
+        try {
+            const response = await AUTH_API.post('/signup', data)
+            console.log(response.data)
+            toast.success(response.data)
+            reset()
+        } catch (err: any) {
+            toast.error(err.response.data)
+            console.log(err)
+        }
+    }
 
 
     return (
@@ -15,7 +29,7 @@ function SignUpForm() {
                 <div>
                     <p className="font-poppins font-bold text-2xl">Create an account</p>
                 </div>
-                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={handleSubmit((data) => console.log(data))}>
+                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={handleSubmit((data) => handleSubmission(data))}>
 
                     <input required={true} placeholder="Username" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" type="text" {...register("userName")} />
                     {errors.userName && errors.userName.message && (
