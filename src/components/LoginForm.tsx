@@ -1,18 +1,40 @@
-import { Link } from "react-router-dom"
-import googleIcon from "../assets/googleIcon.svg"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginFormData, loginSchema } from "../validations/loginSchema"
+import { GoogleLogin } from "@react-oauth/google"
+import toast from "react-hot-toast"
+import { AUTH_API } from "../api/api"
+import { jwtDecode } from "jwt-decode"
 
 function LoginForm() {
+    interface DecodedToken {
+        email: string;
+        name: string;
+        sub: string
+    }
+    const navigate = useNavigate()
+    
     const { handleSubmit, register, formState: { errors } } = useForm<loginFormData>({ resolver: zodResolver(loginSchema) })
+
+    const handleLogin = async (data: object) => {
+        try {
+            const response = await AUTH_API.post("/login", data)
+            localStorage.setItem("userToken", response.data.token)
+            toast.success(response.data.message)
+        } catch (err: any) {
+            toast.error(err.response.data)
+            console.error(err)
+        }
+    }
+
     return (
         <div className="bg-[#fff] w-full h-[100vh] flex justify-center items-center">
             <div className="bg-[#fff] sm:mb-0 mb-20 sm:shadow-lg rounded-lg w-3/4 sm:w-2/4 h-2/4 sm:h-3/4 flex flex-col items-center justify-center p-5 ">
                 <div>
                     <p className="font-poppins font-bold text-2xl">Welcome back !</p>
                 </div>
-                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={handleSubmit((data) => console.log(data))}>
+                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={handleSubmit((data) => handleLogin(data))}>
 
                     <input placeholder="Email" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-8 px-3 border-0 outline-none" required={true} type="email" {...register("email")} />
                     {errors.email && errors.email.message && (
@@ -36,7 +58,28 @@ function LoginForm() {
                     <div className="w-1/4 bg-gray-300 h-[1px]"></div><div className="px-4 font-mukta">OR</div><div className="w-1/4 bg-gray-300 h-[1px]"></div>
                 </div>
                 {/* Divider */}
-                <button className="bg-[#e5e5e6] font-mukta font-medium text-[#fff] rounded-xl w-2/4 sm:w-1/4 py-2 flex justify-center hover:bg-[#cfd1d1] transition-all duration-200 ease-in-out" type="submit"><img className="w-[22px] h-[22px]" src={googleIcon} alt="google-icon" /></button>
+                <GoogleLogin
+                    onSuccess={credentialResponse => {
+                        const { credential } = credentialResponse
+                        let decoded: DecodedToken;
+                        if (credential) {
+                            decoded = jwtDecode(credential);
+                            const userData = {
+                                email: decoded.email,
+                                googleId: decoded.sub
+                            }
+                            handleLogin(userData)
+                            navigate("/")
+                        }
+
+                    }}
+                    onError={() => {
+                        toast.error('Login Failed');
+                    }}
+                    text="signin_with"
+                    theme="filled_black"
+                    size="medium"
+                />
                 <div className="pt-8">
                     <p className="font-mukta">Don't have an account ? <span className="font-bold hover:underline"><Link to={"/signup"}>Create one</Link></span></p>
                 </div>
