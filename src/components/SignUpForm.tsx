@@ -1,14 +1,24 @@
-import { Link } from "react-router-dom"
-import googleIcon from "../assets/googleIcon.svg"
+import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signUpSchema, signUpFormData } from "../validations/signUpSchema"
 import { AUTH_API } from "../api/api"
 import toast from "react-hot-toast"
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode"
 
 function SignUpForm() {
 
+    interface DecodedToken {
+        email: string;
+        name: string;
+        sub: string
+    }
+    
+    const navigate = useNavigate()
+    
     const { handleSubmit, register, reset, formState: { errors } } = useForm<signUpFormData>({ resolver: zodResolver(signUpSchema) })
+
 
     const handleSubmission = async (data: object) => {
         try {
@@ -67,7 +77,29 @@ function SignUpForm() {
                     <div className="w-1/4 bg-gray-300 h-[1px]"></div>
                 </div>
                 {/* Divider */}
-                <button className="bg-[#e5e5e6] font-mukta font-medium text-[#fff] rounded-xl w-2/4 sm:w-1/4 py-2 flex justify-center hover:bg-[#cfd1d1] transition-all duration-200 ease-in-out" type="submit"><img className="w-[22px] h-[22px]" src={googleIcon} alt="google-icon" /></button>
+                <GoogleLogin
+                    onSuccess={credentialResponse => {
+                        const { credential } = credentialResponse
+                        let decoded: DecodedToken;
+                        if (credential) {
+                            decoded = jwtDecode(credential);
+                            const userData = {
+                                userName: decoded.name,
+                                email: decoded.email,
+                                googleId: decoded.sub
+                            }
+                            handleSubmission(userData)
+                            navigate("/")
+                        }
+
+                    }}
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                    text="signup_with"
+                    theme="filled_black"
+                    size="medium"
+                />
                 <div className="pt-8">
                     <p className="font-mukta">Been here before ? <span className="font-bold hover:underline"><Link to={"/login"}>Login</Link></span></p>
                 </div>
