@@ -1,13 +1,44 @@
 import { useRef, useState } from "react";
+import toast from "react-hot-toast";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AUTH_API } from "../api/api";
 
 function OtpForm() {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const email = location?.state?.email
+    const [userOtp, setUserOtp] = useState("")
+
     const otpLength = 5
     const [otp, setOtp] = useState<any[]>(new Array(otpLength).fill(""));
     const inputRefs = useRef<any>([])
 
-    const onOtpSubmit = (otp: string) => {
-        console.log("login success", otp);
-    };
+
+    const verifyOtp = async () => {
+        try {
+            const data = {
+                email: email,
+                otp: userOtp
+            }
+            const response = await AUTH_API.post("/verify-otp", data)
+            toast.success(response.data)
+            navigate("/set-new-password",{state:{email:email}})
+        } catch (err: any) {
+            toast.error(err.response.data)
+            console.error(err)
+        }
+    }
+
+    const resendOtp = async (email: string) => {
+        try {
+            const response = await AUTH_API.post("/send-otp", { email: email })
+            toast.success(response.data)
+        } catch (err: any) {
+            toast.error(err.response.data)
+            console.error(err)
+        }
+    }
+
 
     const handleChange = (index: number, e: any) => {
         e.preventDefault();
@@ -22,7 +53,7 @@ function OtpForm() {
 
         // submit trigger
         const combinedOtp = newOtp.join("");
-        if (combinedOtp.length === otpLength) onOtpSubmit(combinedOtp);
+        if (combinedOtp.length === otpLength) setUserOtp(combinedOtp);
 
         // Move to next input if current field is filled
         if (value && index < otpLength - 1 && inputRefs.current[index + 1]) {
@@ -57,7 +88,10 @@ function OtpForm() {
                 <div>
                     <p className="font-poppins font-bold text-xl">Enter OTP</p>
                 </div>
-                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta">
+                <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={(e) => {
+                    e.preventDefault()
+                    verifyOtp()
+                }}>
                     <div className="flex">
                         {
                             otp.map((value, index) => (
@@ -81,7 +115,7 @@ function OtpForm() {
                     <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Verify OTP</button>
                 </form>
                 <div className="pt-8">
-                    <p className="font-mukta">Didn't get your otp ? <span className="font-bold hover:underline cursor-pointer">Resend</span></p>
+                    <p className="font-mukta">Didn't get your otp ? <span onClick={() => resendOtp(email)} className="font-bold hover:underline cursor-pointer">Resend</span></p>
                 </div>
             </div>
         </div>
