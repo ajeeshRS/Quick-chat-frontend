@@ -3,15 +3,19 @@ import { AUTH_API } from "../api/api"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 
+
 function ForgotPassword() {
+
   const [emailInput, setEmailInput] = useState("")
   const navigate = useNavigate()
 
   const sendOtp = async () => {
     try {
+
       const response = await AUTH_API.post("/send-otp", { email: emailInput })
       toast.success(response.data)
       navigate("/verify-otp", { state: { email: emailInput } })
+      
     } catch (err: any) {
       toast.error(err.response.data)
       console.error(err)

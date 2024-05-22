@@ -4,7 +4,13 @@ import SignUpPage from "./pages/SignUpPage"
 import ForgotPasswordPage from "./pages/ForgotPasswordPage"
 import VerifyOtpPage from "./pages/VerifyOtpPage"
 import SetNewPasswordPage from "./pages/SetNewPasswordPage"
+import { useSelector } from "react-redux"
+import { RootState } from "./state/store"
+
 function Routed() {
+
+  const isOtpVerified = useSelector((state: RootState) => state.verifyOtp.value)
+
   return (
     <Routes>
       <Route path="/" element={null} />
@@ -12,7 +18,10 @@ function Routed() {
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/verify-otp" element={<VerifyOtpPage />} />
-      <Route path="/set-new-password" element={<SetNewPasswordPage />} />
+      {
+        isOtpVerified &&
+        <Route path="/set-new-password" element={<SetNewPasswordPage />} />
+      }
     </Routes>
   )
 }

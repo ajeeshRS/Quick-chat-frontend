@@ -2,12 +2,18 @@ import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AUTH_API } from "../api/api";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../state/store";
+import { setOtpVerified } from "../state/verifyOtp/verifyOtpSlice";
 
 function OtpForm() {
     const navigate = useNavigate()
     const location = useLocation()
     const email = location?.state?.email
     const [userOtp, setUserOtp] = useState("")
+
+
+    const dispatch = useDispatch<AppDispatch>()
 
     const otpLength = 5
     const [otp, setOtp] = useState<any[]>(new Array(otpLength).fill(""));
@@ -22,7 +28,9 @@ function OtpForm() {
             }
             const response = await AUTH_API.post("/verify-otp", data)
             toast.success(response.data)
-            navigate("/set-new-password",{state:{email:email}})
+            dispatch(setOtpVerified())
+            navigate("/set-new-password", { state: { email: email } })
+            
         } catch (err: any) {
             toast.error(err.response.data)
             console.error(err)
