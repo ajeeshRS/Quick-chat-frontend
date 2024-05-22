@@ -6,6 +6,7 @@ import VerifyOtpPage from "./pages/VerifyOtpPage"
 import SetNewPasswordPage from "./pages/SetNewPasswordPage"
 import { useSelector } from "react-redux"
 import { RootState } from "./state/store"
+import NotFoundPage from "./pages/NotFoundPage"
 
 function Routed() {
 
@@ -22,6 +23,7 @@ function Routed() {
         isOtpVerified &&
         <Route path="/set-new-password" element={<SetNewPasswordPage />} />
       }
+      <Route path="*" element={<NotFoundPage/>} />
     </Routes>
   )
 }
