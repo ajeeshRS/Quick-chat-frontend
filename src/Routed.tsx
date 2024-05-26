@@ -7,6 +7,7 @@ import SetNewPasswordPage from "./pages/SetNewPasswordPage"
 import { useSelector } from "react-redux"
 import { RootState } from "./state/store"
 import NotFoundPage from "./pages/NotFoundPage"
+import HomePage from "./pages/HomePage"
 
 function Routed() {
 
@@ -14,7 +15,7 @@ function Routed() {
 
   return (
     <Routes>
-      <Route path="/" element={null} />
+      <Route path="/" element={<HomePage/>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />

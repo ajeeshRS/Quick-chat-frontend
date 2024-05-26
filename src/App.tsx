@@ -1,5 +1,6 @@
 import Routed from "./Routed"
 import { Toaster } from "react-hot-toast"
+import "./styles/scrollBar.css"
 function App() {
 
   return (
