@@ -24,8 +24,10 @@ function ChatView() {
                         </div>
                     </div>
                     <div className='flex w-1/4 justify-around'>
-                        <Icon icon="mage:phone" width="25" height="25" />
-                        <Icon icon="uil:video" width="25" height="25" /></div>
+                        <button className='hover:bg-[#e7e7e7]   rounded-lg duration-300 p-2 transition-all ease-in-out w-full flex justify-center items-center'> <Icon icon="mage:phone" width="25" height="25" /></button>
+                        <button className='hover:bg-[#e7e7e7]   rounded-lg duration-300 p-2 transition-all ease-in-out w-full flex justify-center items-center'> <Icon icon="uil:video" width="25" height="25" /></button>
+
+                    </div>
                 </div>
 
                 <div className='w-full h-[75vh]'>
@@ -36,7 +38,7 @@ function ChatView() {
                                     {message.text}
                                 </p>
                             </div>
-                        )) : <div className="h-full flex justify-center items-center text-gray-500 mt-4">
+                        )) : <div className="h-4/6 flex justify-center items-center text-gray-500 mt-4">
                             No messages yet. Start the conversation!
                         </div>}
                     </div>

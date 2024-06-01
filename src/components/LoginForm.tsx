@@ -6,6 +6,8 @@ import { GoogleLogin } from "@react-oauth/google"
 import toast from "react-hot-toast"
 import { AUTH_API } from "../api/api"
 import { jwtDecode } from "jwt-decode"
+import { useDispatch } from "react-redux"
+import { setToken } from "../state/token/tokenSlice"
 
 function LoginForm() {
     interface DecodedToken {
@@ -14,14 +16,17 @@ function LoginForm() {
         sub: string
     }
     const navigate = useNavigate()
-    
-    const { handleSubmit, register, formState: { errors } } = useForm<loginFormData>({ resolver: zodResolver(loginSchema) })
+    const dispatch = useDispatch()
+
+    const { handleSubmit, register, formState: { errors }, reset } = useForm<loginFormData>({ resolver: zodResolver(loginSchema) })
 
     const handleLogin = async (data: object) => {
         try {
             const response = await AUTH_API.post("/login", data)
-            localStorage.setItem("userToken", response.data.token)
+            dispatch(setToken(response.data.token))
+            reset()
             toast.success(response.data.message)
+            navigate("/")
         } catch (err: any) {
             toast.error(err.response.data)
             console.error(err)
