@@ -1,5 +1,5 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function ChatView() {
 
@@ -10,6 +10,16 @@ function ChatView() {
     }
 
     const [messages, setMessages] = useState<messageType[]>([]);
+    useEffect(() => {
+
+        setMessages([
+            {
+                text: 'hey',
+                sent: false,
+                received: false
+            }
+        ])
+    })
 
     return (
         <div className='flex sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg'>

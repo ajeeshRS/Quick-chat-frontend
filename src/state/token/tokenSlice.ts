@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  token: null,
+  token: '',
 };
 
 const tokenSlice = createSlice({
@@ -12,7 +12,7 @@ const tokenSlice = createSlice({
       state.token = action.payload;
     },
     removeToken: (state) => {
-      state.token = null;
+      state.token = '';
     },
   },
 });

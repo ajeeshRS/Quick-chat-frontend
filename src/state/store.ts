@@ -21,8 +21,17 @@ const rootReducer = combineReducers({
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-    reducer: persistedReducer
-})
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                // Ignore these action types
+                ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+                // Optionally ignore paths
+                ignoredPaths: ['register', 'rehydrate'],
+            },
+        }),
+});
 
 export const persistor = persistStore(store)
 
