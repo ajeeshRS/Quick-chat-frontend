@@ -4,6 +4,7 @@ import verifyOtpReducer from "./verifyOtp/verifyOtpSlice";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
 import tokenReducer from "./token/tokenSlice";
+import peerReducer from "./peer/peerSlice";
 
 const persistConfig = {
     key: 'root',
@@ -14,7 +15,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
     user: userReducer,
     verifyOtp: verifyOtpReducer,
-    token: tokenReducer
+    token: tokenReducer,
+    peer:peerReducer
 });
 
 
