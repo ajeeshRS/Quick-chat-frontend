@@ -14,34 +14,35 @@ function SearchPopup() {
         setIsOpen(!isOpen);
     };
 
-    const handleSearch = async (e: any) => {
-        e.preventDefault();
+    const handleSearch = async () => {
         try {
             const res = await USER_API.get(`/search-user/${query}`)
             setResult(res.data)
-
         } catch (err) {
-            console.error(err)
-
+            console.error('Error: ', err)
         }
     };
 
     const goToChat = (data: any) => {
         togglePopup()
+        setQuery('')
+        setResult([])
         navigate(`/${data.socketId}`, { state: { data } })
     }
 
 
     return (
         <div className="relative">
-
             <button onClick={togglePopup} className='hover:bg-[#e7e7e7]   rounded-lg duration-300 p-2 transition-all ease-in-out w-full flex justify-center items-center'><Icon icon="fluent:chat-add-32-regular" width="20" height="20" /></button>
 
             {isOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                     <div className="bg-white p-6 w-3/4 sm:w-1/2 h-1/2 rounded shadow-lg">
 
-                        <form onSubmit={handleSearch} className='flex flex-col'>
+                        <form onSubmit={(e) => {
+                            e.preventDefault()
+                            handleSearch()
+                        }} className='flex flex-col'>
                             <div className="mb-4">
                                 <div className='flex justify-between items-center h-10'>
                                     <p className="block text-gray-700 mb-2 sm:pl-0 pl-2 font-mukta font-semibold">Search for user</p>

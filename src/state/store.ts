@@ -5,6 +5,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
 import tokenReducer from "./token/tokenSlice";
 import peerReducer from "./peer/peerSlice";
+import messageReducer from "./message/messageSlice";
 
 const persistConfig = {
     key: 'root',
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     user: userReducer,
     verifyOtp: verifyOtpReducer,
     token: tokenReducer,
-    peer:peerReducer
+    peer: peerReducer,
+    messages: messageReducer
 });
 
 

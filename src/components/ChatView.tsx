@@ -4,37 +4,45 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function ChatView() {
+
+function ChatView({ setMessageInp }: any) {
+
+    interface peer {
+        username: string,
+        email: string,
+        profilePicture: string,
+        bio: string,
+        status: string,
+        blockedContacts: [],
+        contacts: [],
+        socketId: string
+    }
+
     const { id } = useParams()
     const navigate = useNavigate()
-    const peerData = useSelector((state: RootState) => state.peer.data)
+    
+    const peerData: peer = useSelector((state: RootState) => state.peer.data)
+    const messageData = useSelector((state: RootState) => state.messages.messages)
+    const user = useSelector((state: RootState) => state.user.user)
 
-    interface messageType {
-        text: string,
-        sent: boolean,
-        received: boolean
-    }
+
     const [toggle, setToggle] = useState<boolean>(false)
-    const [messages, setMessages] = useState<messageType[]>([]);
-    useEffect(() => {
+    const [messages, setMessages] = useState<any[]>([]);
+    const [messageInput, setMessageInput] = useState<string>('')
 
-        setMessages([
-            {
-                text: 'hey',
-                sent: false,
-                received: true
-            },
-            {
-                text: 'hey',
-                sent: true,
-                received: false
-            }
-        ])
+
+    const handleSendingMessage = () => {
+        setMessageInp(messageInput)
+        setMessageInput('')
+    }
+
+    useEffect(() => {
+        setMessages(messageData)
     }, [])
 
     return (
-        <div className={id ? 'sm:flex sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg' : 'sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg'}>
-            <div className={toggle ? 'sm:flex sm:w-[55%] w-4/4 sm:h-6/6 h-4/4 flex-col bg-white rounded-lg m-2  shadow-sm sm:shadow-lg hidden' : 'flex sm:w-[55%] w-4/4 sm:h-6/6 h-4/4 flex-col bg-white rounded-lg m-2  shadow-sm sm:shadow-lg'}>
+        <div className={id ? 'sm:flex sm:w-[65%] w-4/4 sm:h-6/6 h-6/6  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg' : 'sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg'}>
+            <div className={toggle ? 'sm:flex sm:w-[55%] w-4/4 sm:h-6/6 h-[90vh] flex-col bg-white rounded-lg m-2  shadow-sm sm:shadow-lg hidden' : 'flex sm:w-[55%] w-4/4 sm:h-6/6 h-4/4 flex-col bg-white rounded-lg m-2  shadow-sm sm:shadow-lg'}>
 
                 <div className='w-full h-[10vh] flex justify-between px-6 items-center py-4 bg'>
                     <div className='flex items-center py-2'>
@@ -42,7 +50,7 @@ function ChatView() {
                         <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover rounded-full mr-2 pl-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
                         <div className='flex flex-col font-mukta pl-2'>
                             <p className='font-semibold text-lg'>{peerData.username}</p>
-                            <p className='text-[#9b9b9b]'>offline</p>
+                            <p className='text-[#9b9b9b]'>{peerData.status}</p>
                         </div>
                     </div>
                     <div className='flex w-1/4 justify-around'>
@@ -55,7 +63,7 @@ function ChatView() {
                 <div className='w-full sm:h-[75vh] h-[65vh]'>
                     <div className="messages rounded-lg h-full p-2 max-w-md w-full overflow-y-auto mb-6 custom-scrollbar">
                         {messages.length > 0 ? messages.map((message, index) => (
-                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sent ? 'justify-end' : 'justify-start'}`}>
+                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender == user ? 'justify-end' : 'justify-start'}`}>
                                 <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sent ? 'bg-[#2161EC] rounded-br-none text-white' : 'rounded-bl-none'}`}>
                                     {message.text}
                                 </p>
@@ -68,15 +76,16 @@ function ChatView() {
 
 
                 <div className='w-full  h-[10vh] flex  justify-center items-center'>
-                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' />
-                    <Icon className='mx-2 cursor-pointer text-[#217FEC] hover:text-[#2172ec]' icon="mingcute:send-fill" width="30" height="30" />
+                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' value={messageInput} onChange={(e) => setMessageInput(e.target.value)} />
+                    <Icon className='mx-2 cursor-pointer text-[#217FEC] hover:text-[#2172ec]' icon="mingcute:send-fill" width="30" height="30" onClick={() => handleSendingMessage()} />
                 </div>
             </div>
 
-            <div className={id && toggle ? 'sm:flex sm:w-[45%] w-4/4 sm:h-6/6 h-[90svh] flex-col bg-[#fff] rounded-lg m-2 justify-between  shadow-sm sm:shadow-lg ' : 'sm:flex hidden sm:w-[45%] w-4/4 sm:h-6/6 h-4/4 flex-col bg-[#fff] rounded-lg m-2 justify-between shadow-sm sm:shadow-lg '}>
+            {/* contact info */}
+            <div className={id && toggle ? 'sm:flex sm:w-[45%] w-4/4 sm:h-6/6 h-[90vh] flex-col bg-[#fff] rounded-lg m-2 justify-between  shadow-sm sm:shadow-lg ' : 'sm:flex hidden sm:w-[45%] w-4/4 sm:h-6/6 h-[95vh] flex-col bg-[#fff] rounded-lg m-2 justify-between shadow-sm sm:shadow-lg '}>
 
                 <div className='w-full px-4 flex flex-start pt-4 items-center'>
-                <Icon className='sm:hidden block px-1' onClick={() =>setToggle(!toggle)} icon="ion:arrow-back" width="25" height="25" />
+                    <Icon className='sm:hidden block px-1' onClick={() => setToggle(!toggle)} icon="ion:arrow-back" width="25" height="25" />
                     <p className='font-semibold text-xl font-poppins px-5'>Contact Info</p>
                 </div>
 
