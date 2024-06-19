@@ -6,6 +6,7 @@ import storage from "redux-persist/lib/storage";
 import tokenReducer from "./token/tokenSlice";
 import peerReducer from "./peer/peerSlice";
 import messageReducer from "./message/messageSlice";
+import onlineUsersReducer from "./onlineUsers/onlineUsersSlice";
 
 const persistConfig = {
     key: 'root',
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
     verifyOtp: verifyOtpReducer,
     token: tokenReducer,
     peer: peerReducer,
-    messages: messageReducer
+    messages: messageReducer,
+    onlineUsers: onlineUsersReducer
 });
 
 

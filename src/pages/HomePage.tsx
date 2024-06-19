@@ -9,7 +9,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ChatView from '../components/ChatView';
 import { setPeerData } from '../state/peer/peerSlice';
 import { setUser } from '../state/user/userSlice';
-// import { addMessage } from '../state/message/messageSlice';
+import { addMessage } from '../state/message/messageSlice';
+import { setOnlineUserData } from '../state/onlineUsers/onlineUsersSlice';
+import toast from 'react-hot-toast';
 
 function HomePage() {
   const token = useSelector((state: RootState) => state.token.token)
@@ -44,8 +46,6 @@ function HomePage() {
     handleSendMessage()
   }, [messageInp])
 
-
-
   useEffect(() => {
 
     if (!token) {
@@ -63,16 +63,28 @@ function HomePage() {
         socketRef.current?.emit("userOnline", 'online')
       })
 
+      socketRef.current.on("connect_error", (err) => {
+        toast.error("Authentication error, Please login again!")
+        console.log("Connection error", err)
+        setTimeout(() => {
+          navigate("/login")
+        }, 3000)
+      })
+
+      socketRef.current.on('online-users', (users) => {
+        dispatch(setOnlineUserData(users))
+      })
+
       // recieve message event
       socketRef.current.on('receive-message', (messageData: messageData) => {
         const data =
         {
-          message: messageData.message,
+          content: messageData.message,
           sender: messageData.sender,
           recipient: messageData.recipient
         }
         console.log(data)
-        // dispatch(addMessage(data))
+        dispatch(addMessage(data))
       })
 
       // user connection event
@@ -95,7 +107,7 @@ function HomePage() {
       }
     }
 
-  }, [token])
+  }, [navigate])
 
 
   return (
@@ -103,7 +115,7 @@ function HomePage() {
       <NavBar />
       <AllChats />
       {id ?
-        <ChatView setMessageInp={setMessageInp} /> :
+        <ChatView setMessageInp={setMessageInp} socket={socketRef} /> :
         <div className='sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-center shadow-sm sm:shadow-lg items-center'>
           <p className='font-montserrat font-semibold'>
             Select a conversation to start chatting !

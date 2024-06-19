@@ -1,11 +1,12 @@
 import { Icon } from '@iconify/react/dist/iconify.js'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../state/store';
 import { useNavigate, useParams } from 'react-router-dom';
+import { addMessage } from '../state/message/messageSlice';
 
 
-function ChatView({ setMessageInp }: any) {
+function ChatView({ setMessageInp, socket }: any) {
 
     interface peer {
         username: string,
@@ -18,27 +19,54 @@ function ChatView({ setMessageInp }: any) {
         socketId: string
     }
 
+
+
     const { id } = useParams()
     const navigate = useNavigate()
-    
+
     const peerData: peer = useSelector((state: RootState) => state.peer.data)
     const messageData = useSelector((state: RootState) => state.messages.messages)
-    const user = useSelector((state: RootState) => state.user.user)
+    const onlineUsers = useSelector((state: RootState) => state.onlineUsers.data)
+    const user: any = useSelector((state: RootState) => state.user.user)
+    const dispatch = useDispatch<AppDispatch>()
 
 
     const [toggle, setToggle] = useState<boolean>(false)
     const [messages, setMessages] = useState<any[]>([]);
     const [messageInput, setMessageInput] = useState<string>('')
-
+    const [isUserOnline, setIsUserOnline] = useState(false)
 
     const handleSendingMessage = () => {
         setMessageInp(messageInput)
+        const data = {
+            content: messageInput,
+            sender: user.email,
+            recipient: peerData.email
+        }
+        dispatch(addMessage(data))
         setMessageInput('')
+
+    }
+
+    const statusChecker = (onlineUsersData: any, peerEmail: string) => {
+        return onlineUsersData[peerEmail] ? true : false
+    }
+
+    const handleTyping = (e: any) => {
+        e.preventDefault()
+        setMessageInput(e.target?.value)
+        socket.emit('typing', user.email)
     }
 
     useEffect(() => {
+        setIsUserOnline(statusChecker(onlineUsers, peerData.email))
+        console.log(onlineUsers)
+    }, [onlineUsers, peerData.email])
+
+
+    useEffect(() => {
         setMessages(messageData)
-    }, [])
+    }, [messageData])
 
     return (
         <div className={id ? 'sm:flex sm:w-[65%] w-4/4 sm:h-6/6 h-6/6  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg' : 'sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-between shadow-sm sm:shadow-lg'}>
@@ -50,7 +78,7 @@ function ChatView({ setMessageInp }: any) {
                         <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover rounded-full mr-2 pl-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
                         <div className='flex flex-col font-mukta pl-2'>
                             <p className='font-semibold text-lg'>{peerData.username}</p>
-                            <p className='text-[#9b9b9b]'>{peerData.status}</p>
+                            <p className='text-[#9b9b9b]'>{isUserOnline ? 'online' : 'offline'}</p>
                         </div>
                     </div>
                     <div className='flex w-1/4 justify-around'>
@@ -63,9 +91,9 @@ function ChatView({ setMessageInp }: any) {
                 <div className='w-full sm:h-[75vh] h-[65vh]'>
                     <div className="messages rounded-lg h-full p-2 max-w-md w-full overflow-y-auto mb-6 custom-scrollbar">
                         {messages.length > 0 ? messages.map((message, index) => (
-                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender == user ? 'justify-end' : 'justify-start'}`}>
-                                <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sent ? 'bg-[#2161EC] rounded-br-none text-white' : 'rounded-bl-none'}`}>
-                                    {message.text}
+                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender === user.email ? 'justify-end' : 'justify-start'}`}>
+                                <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sender === user.email ? 'bg-[#2161EC] rounded-br-none text-white' : 'rounded-bl-none'}`}>
+                                    {message.content}
                                 </p>
                             </div>
                         )) : <div className="h-4/6 flex justify-center items-center text-gray-500 mt-4">
@@ -76,7 +104,7 @@ function ChatView({ setMessageInp }: any) {
 
 
                 <div className='w-full  h-[10vh] flex  justify-center items-center'>
-                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' value={messageInput} onChange={(e) => setMessageInput(e.target.value)} />
+                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' value={messageInput} onChange={(e) => handleTyping(e)} />
                     <Icon className='mx-2 cursor-pointer text-[#217FEC] hover:text-[#2172ec]' icon="mingcute:send-fill" width="30" height="30" onClick={() => handleSendingMessage()} />
                 </div>
             </div>
