@@ -63,14 +63,18 @@ function HomePage() {
         socketRef.current?.emit("userOnline", 'online')
       })
 
+      // on connection error
       socketRef.current.on("connect_error", (err) => {
+        // toast message
         toast.error("Authentication error, Please login again!")
         console.log("Connection error", err)
+        // navigate to login page after 3sec
         setTimeout(() => {
           navigate("/login")
         }, 3000)
       })
 
+      // set online users
       socketRef.current.on('online-users', (users) => {
         dispatch(setOnlineUserData(users))
       })
@@ -99,7 +103,7 @@ function HomePage() {
       }
       )
     }
-
+    // cleanup function
     return () => {
       if (socketRef.current) {
         socketRef.current?.disconnect()
@@ -107,7 +111,7 @@ function HomePage() {
       }
     }
 
-  }, [navigate])
+  }, [token])
 
 
   return (
@@ -115,7 +119,7 @@ function HomePage() {
       <NavBar />
       <AllChats />
       {id ?
-        <ChatView setMessageInp={setMessageInp} socket={socketRef} /> :
+        <ChatView setMessageInp={setMessageInp} socketRef={socketRef} /> :
         <div className='sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-center shadow-sm sm:shadow-lg items-center'>
           <p className='font-montserrat font-semibold'>
             Select a conversation to start chatting !

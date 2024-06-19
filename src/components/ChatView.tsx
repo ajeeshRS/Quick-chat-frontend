@@ -4,9 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../state/store';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addMessage } from '../state/message/messageSlice';
+import { Socket } from 'socket.io-client';
 
 
-function ChatView({ setMessageInp, socket }: any) {
+interface ChatViewProps {
+    setMessageInp: (message: string) => void;
+    socketRef: React.RefObject<Socket | null>;
+}
+
+function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
 
     interface peer {
         username: string,
@@ -35,29 +41,70 @@ function ChatView({ setMessageInp, socket }: any) {
     const [messages, setMessages] = useState<any[]>([]);
     const [messageInput, setMessageInput] = useState<string>('')
     const [isUserOnline, setIsUserOnline] = useState(false)
+    const [isTyping, setIsTyping] = useState(false)
 
+    // message sending
     const handleSendingMessage = () => {
         setMessageInp(messageInput)
         const data = {
             content: messageInput,
-            sender: user.email,
+            sender: user[0].email,
             recipient: peerData.email
         }
+        console.log(data)
         dispatch(addMessage(data))
+        handleStopTyping()
         setMessageInput('')
 
     }
 
+    // check for user in online-users-list
     const statusChecker = (onlineUsersData: any, peerEmail: string) => {
         return onlineUsersData[peerEmail] ? true : false
     }
 
-    const handleTyping = (e: any) => {
-        e.preventDefault()
-        setMessageInput(e.target?.value)
-        socket.emit('typing', user.email)
+    // handle typing event
+    const handleTyping = () => {
+        socketRef.current?.emit("typing", {
+            sender: user[0].email,
+            recipient: peerData.email,
+            recipientSocketId: peerData.socketId
+        })
     }
 
+    const handleStopTyping = () => {
+        socketRef.current?.emit('stopTyping', {
+            sender: user[0].email,
+            recipient: peerData.email,
+            recipientSocketId: peerData.socketId,
+        });
+    };
+
+    // listen for the user typing and stop typing
+    useEffect(() => {
+        socketRef.current?.on('typing', (sender) => {
+            if (sender === peerData.email) {
+                setIsTyping(true);
+            }
+            console.log(`${sender} is typing...`);
+        });
+
+        socketRef.current?.on('stopTyping', (sender) => {
+            if (sender === peerData.email) {
+                setIsTyping(false);
+            }
+            console.log(`${sender} stopped typing.`);
+        });
+
+        // cleanup function
+        return () => {
+            socketRef.current?.off('typing');
+            socketRef.current?.off('stopTyping');
+        };
+    }, [socketRef, peerData.email])
+
+
+    // onilne status updation
     useEffect(() => {
         setIsUserOnline(statusChecker(onlineUsers, peerData.email))
         console.log(onlineUsers)
@@ -78,7 +125,7 @@ function ChatView({ setMessageInp, socket }: any) {
                         <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover rounded-full mr-2 pl-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
                         <div className='flex flex-col font-mukta pl-2'>
                             <p className='font-semibold text-lg'>{peerData.username}</p>
-                            <p className='text-[#9b9b9b]'>{isUserOnline ? 'online' : 'offline'}</p>
+                            <p className='text-[#9b9b9b]'>{isTyping ? 'typing...' : isUserOnline ? 'online' : 'offline'}</p>
                         </div>
                     </div>
                     <div className='flex w-1/4 justify-around'>
@@ -91,8 +138,8 @@ function ChatView({ setMessageInp, socket }: any) {
                 <div className='w-full sm:h-[75vh] h-[65vh]'>
                     <div className="messages rounded-lg h-full p-2 max-w-md w-full overflow-y-auto mb-6 custom-scrollbar">
                         {messages.length > 0 ? messages.map((message, index) => (
-                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender === user.email ? 'justify-end' : 'justify-start'}`}>
-                                <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sender === user.email ? 'bg-[#2161EC] rounded-br-none text-white' : 'rounded-bl-none'}`}>
+                            <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender === user[0].email ? 'justify-end' : 'justify-start'}`}>
+                                <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sender === user[0].email ? 'bg-[#2161EC] rounded-br-none text-white' : 'rounded-bl-none'}`}>
                                     {message.content}
                                 </p>
                             </div>
@@ -104,7 +151,7 @@ function ChatView({ setMessageInp, socket }: any) {
 
 
                 <div className='w-full  h-[10vh] flex  justify-center items-center'>
-                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' value={messageInput} onChange={(e) => handleTyping(e)} />
+                    <input type="text" className='bg-slate-100 w-5/6 h-10 rounded-lg outline-none px-4' value={messageInput} onChange={(e) => setMessageInput(e.target.value)} onKeyDown={() => handleTyping()} onBlur={() => handleStopTyping()} />
                     <Icon className='mx-2 cursor-pointer text-[#217FEC] hover:text-[#2172ec]' icon="mingcute:send-fill" width="30" height="30" onClick={() => handleSendingMessage()} />
                 </div>
             </div>
