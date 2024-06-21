@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from '../state/store';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addMessage } from '../state/message/messageSlice';
 import { Socket } from 'socket.io-client';
+import { getCurrentDateAndTime, getFirstLetter } from '../utils/utils';
 
 
 interface ChatViewProps {
@@ -46,10 +47,13 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
     // message sending
     const handleSendingMessage = () => {
         setMessageInp(messageInput)
+        const { formattedDate, formattedTime } = getCurrentDateAndTime()
         const data = {
             content: messageInput,
             sender: user[0].email,
-            recipient: peerData.email
+            recipient: peerData.email,
+            date: formattedDate,
+            time: formattedTime
         }
         console.log(data)
         dispatch(addMessage(data))
@@ -122,7 +126,12 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
                 <div className='w-full h-[10vh] flex justify-between px-6 items-center py-4'>
                     <div className='flex items-center py-2 w-3/4'>
                         <Icon className='sm:hidden block pr-1' onClick={() => navigate(-1)} icon="ion:arrow-back" width="20" height="20" />
-                        <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover cursor-pointer rounded-full mr-2 ml-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
+                        {
+                            peerData.profilePicture !== "" ?
+
+                                <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover cursor-pointer rounded-full mr-2 ml-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" /> : <p className='w-[45px] h-[45px] bg-gray-400 text-xl text-white flex items-center justify-center rounded-full'>{getFirstLetter(peerData.username)}</p>
+                        }
+
                         <div className='flex flex-col font-mukta pl-2'>
                             <p className='font-semibold text-lg'>{peerData.username}</p>
                             <p className='text-[#9b9b9b]'>{isTyping ? 'typing...' : isUserOnline ? 'online' : 'offline'}</p>
@@ -139,9 +148,17 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
                     <div className="messages rounded-lg h-full p-2 max-w-lg w-full overflow-y-auto mb-6 custom-scrollbar">
                         {messages.length > 0 ? messages.map((message, index) => (
                             <div key={index} className={`text-black mb-2 flex px-5 rounded-s-md ${message.sender === user[0].email ? 'justify-end' : 'justify-start'}`}>
-                                <p className={`border px-3 py-1 rounded-xl max-w-[70%] break-words ${message.sender === user[0].email ? 'bg-[#55AD9B] rounded-br-none text-white' : 'rounded-bl-none'}`}>
-                                    {message.content}
-                                </p>
+                                <div className={`border px-3 py-1 flex rounded-xl max-w-[70%] break-words ${message.sender === user[0].email ? 'bg-[#55AD9B] rounded-br-none text-white' : 'rounded-bl-none'}`}>
+                                    <p className='pr-3'>
+                                        {message.content}
+                                    </p>
+                                    <p className='text-xs flex items-end'>
+                                        {message.time} {
+                                            message.sender === user[0].email &&
+                                            <Icon className='pl-1 pt-2' icon="charm:tick-double" width="25" height="25" />
+                                        }
+                                    </p>
+                                </div>
                             </div>
                         )) : <div className="h-4/6 flex justify-center items-center text-gray-500 mt-4">
                             No messages yet. Start the conversation!
@@ -167,7 +184,13 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
                 </div>
 
                 <div className='w-full h-[50vh] flex flex-col items-center justify-center sm:pt-0 pt-10'>
-                    <img className='w-[90px] h-[90px] object-cover rounded-full border-4' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
+                    {
+                        peerData.profilePicture !== "" ?
+                            <img className='w-[90px] h-[90px] object-cover rounded-full border-4' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" /> :
+                            <p className='w-[90px] h-[90px] bg-gray-400 text-2xl text-white flex items-center justify-center rounded-full'>{getFirstLetter(peerData.username)}</p>
+                    }
+
+
                     <p className='font-semibold font-mukta py-2'>{peerData.username}</p>
                     <div className='w-full flex flex-col items-center'>
 

@@ -12,6 +12,7 @@ import { setUser } from '../state/user/userSlice';
 import { addMessage } from '../state/message/messageSlice';
 import { setOnlineUserData } from '../state/onlineUsers/onlineUsersSlice';
 import toast from 'react-hot-toast';
+import { getCurrentDateAndTime } from '../utils/utils';
 
 function HomePage() {
   const token = useSelector((state: RootState) => state.token.token)
@@ -81,11 +82,14 @@ function HomePage() {
 
       // recieve message event
       socketRef.current.on('receive-message', (messageData: messageData) => {
+        const { formattedDate, formattedTime } = getCurrentDateAndTime()
         const data =
         {
           content: messageData.message,
           sender: messageData.sender,
-          recipient: messageData.recipient
+          recipient: messageData.recipient,
+          date: formattedDate,
+          time: formattedTime
         }
         console.log(data)
         dispatch(addMessage(data))

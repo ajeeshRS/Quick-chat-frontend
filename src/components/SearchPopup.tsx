@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import toast from 'react-hot-toast';
+import { getFirstLetter } from '../utils/utils';
 
 function SearchPopup() {
     const [isOpen, setIsOpen] = useState(false);
@@ -101,8 +102,11 @@ function SearchPopup() {
 
                                     <div key={index} className='w-full h-10 cursor-pointer hover:bg-slate-100 duration-300 transition-all ease-in-out text-black flex items-center rounded-md '>
                                         <div className='w-full pl-4 flex items-center justify-between'>
-                                            <div className='flex items-center flex-start' onClick={() => goToChat(data)}>
-                                                <img className='w-[30px] h-[30px] object-cover rounded-full' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" />
+                                            <div className='flex items-center flex-start' onClick={() => goToChat(data)}>{
+                                                data.profilePicture !== "" ?
+
+                                                    <img className='w-[30px] h-[30px] object-cover rounded-full' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" /> : <p className='w-[30px] h-[30px] bg-gray-400 text-white flex items-center justify-center rounded-full'>{getFirstLetter(data.username)}</p>
+                                            }
                                                 <p className='font-semibold font-mukta px-3'>{data.username}</p>
                                             </div>
                                             <button className='mr-2 bg-[#55AD9B] px-2 py-1 rounded-lg text-white hover:bg-[#95D2B3] transition-all duration-300 ease-in-out ' onClick={() => addToContacts(userData[0].email, data.email, data.username)}>

@@ -3,7 +3,9 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 interface message {
     content: string,
     sender: string,
-    recipient: string
+    recipient: string,
+    date: string,
+    time: string
 }
 
 interface messageState {
