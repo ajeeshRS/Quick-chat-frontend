@@ -26,14 +26,14 @@ function ForgotPassword() {
     <div className="bg-[#fff] w-full h-[100vh] flex justify-center items-center">
       <div className="bg-[#fff] sm:mb-0 mb-20 sm:shadow-lg rounded-lg w-3/4 sm:w-2/4 h-2/4 sm:h-3/4 flex flex-col items-center justify-center p-5 ">
         <div className="w-full px-3 sm:px-0 sm:w-1/2 flex justify-center">
-          <p className="font-poppins font-semibold text-sm sm:text-lg text-justify">Enter your email and We'll send you an OTP to reset your password.</p>
+          <p className="font-mukta font-bold text-[#5c5c5c] text-sm sm:text-lg text-justify">Enter your email</p>
         </div>
         <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={(e) => {
           e.preventDefault()
           sendOtp()
         }}>
           <input value={emailInput} onChange={(e) => setEmailInput(e.target.value)} placeholder="Email" className="bg-[#f5f2f2] mt-2 rounded-lg w-full h-10 px-3 border-0 outline-none" name="email" type="email" />
-          <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Send OTP</button>
+          <button className="bg-[#55AD9B] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#95D2B3] transition-all duration-200 ease-in-out" type="submit">Send OTP</button>
         </form>
       </div>
     </div>

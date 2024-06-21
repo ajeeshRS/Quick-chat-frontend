@@ -120,8 +120,8 @@ function HomePage() {
       <AllChats />
       {id ?
         <ChatView setMessageInp={setMessageInp} socketRef={socketRef} /> :
-        <div className='sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-white rounded-lg m-2 justify-center shadow-sm sm:shadow-lg items-center'>
-          <p className='font-montserrat font-semibold'>
+        <div className='sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-[#f8faf4] rounded-lg m-2 justify-center shadow-sm sm:shadow-lg items-center'>
+          <p className='font-mukta text-gray-600'>
             Select a conversation to start chatting !
           </p>
         </div>

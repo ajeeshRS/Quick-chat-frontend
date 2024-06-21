@@ -55,7 +55,7 @@ function LoginForm() {
                     )}
                     <p className="w-full flex justify-end py-2 pr-2 text-sm hover:underline font-mukta"><Link to={"/forgot-password"}>Forgot password ?</Link></p>
 
-                    <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Log in</button>
+                    <button className="bg-[#55AD9B] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#95D2B3] transition-all duration-200 ease-in-out" type="submit">Log in</button>
 
                 </form>
                 {/* Divider */}

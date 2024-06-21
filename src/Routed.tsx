@@ -15,17 +15,14 @@ function Routed() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomePage/>} />
-      <Route path="/:id" element={<HomePage/>} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/chat/:id" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/verify-otp" element={<VerifyOtpPage />} />
-      {
-        isOtpVerified &&
-        <Route path="/set-new-password" element={<SetNewPasswordPage />} />
-      }
-      <Route path="*" element={<NotFoundPage/>} />
+      <Route path="/set-new-password" element={isOtpVerified ? <SetNewPasswordPage /> : <NotFoundPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

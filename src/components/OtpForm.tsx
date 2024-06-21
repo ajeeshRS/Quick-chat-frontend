@@ -94,7 +94,7 @@ function OtpForm() {
         <div className="bg-[#fff] w-full h-[100vh] flex justify-center items-center">
             <div className="bg-[#fff] sm:mb-0 mb-20 sm:shadow-lg rounded-lg w-3/4 sm:w-2/4 h-2/4 sm:h-3/4 flex flex-col items-center justify-center p-5 ">
                 <div>
-                    <p className="font-poppins font-bold text-xl">Enter OTP</p>
+                    <p className="font-mukta text-[#5c5c5c] font-bold text-xl">Enter OTP</p>
                 </div>
                 <form className="flex flex-col pt-4 items-center w-full sm:w-2/4 font-mukta" onSubmit={(e) => {
                     e.preventDefault()
@@ -120,7 +120,7 @@ function OtpForm() {
 
 
                     </div>
-                    <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Verify OTP</button>
+                    <button className="bg-[#55AD9B] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#95D2B3] transition-all duration-200 ease-in-out" type="submit">Verify OTP</button>
                 </form>
                 <div className="pt-8">
                     <p className="font-mukta">Didn't get your otp ? <span onClick={() => resendOtp(email)} className="font-bold hover:underline cursor-pointer">Resend</span></p>

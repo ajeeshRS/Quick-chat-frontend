@@ -68,7 +68,7 @@ function SignUpForm() {
                             {errors.confirm.message}
                         </p>
                     )}
-                    <button className="bg-[#217FEC] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#1a5a8a] transition-all duration-200 ease-in-out" type="submit">Sign up</button>
+                    <button className="bg-[#55AD9B] font-mukta font-medium text-[#fff] rounded-xl w-1/2 py-2 mt-4 hover:bg-[#95D2B3] transition-all duration-200 ease-in-out" type="submit">Sign up</button>
                 </form>
                 {/* Divider */}
                 <div className="flex w-full items-center justify-center my-2">
