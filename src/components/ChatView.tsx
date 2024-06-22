@@ -129,7 +129,7 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
                         {
                             peerData.profilePicture !== "" ?
 
-                                <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover cursor-pointer rounded-full mr-2 ml-2' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" /> : <p className='w-[45px] h-[45px] bg-gray-400 text-xl text-white flex items-center justify-center rounded-full'>{getFirstLetter(peerData.username)}</p>
+                                <img onClick={() => setToggle(!toggle)} className='w-[45px] h-[45px] object-cover cursor-pointer rounded-full mr-2 ml-2' src={peerData.profilePicture} alt="profile-img" /> : <p className='w-[45px] h-[45px] bg-gray-400 text-xl text-white flex items-center justify-center rounded-full'>{getFirstLetter(peerData.username)}</p>
                         }
 
                         <div className='flex flex-col font-mukta pl-2'>
@@ -186,7 +186,7 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
                 <div className='w-full h-[50vh] flex flex-col items-center justify-center sm:pt-0 pt-10'>
                     {
                         peerData.profilePicture !== "" ?
-                            <img className='w-[90px] h-[90px] object-cover rounded-full border-4' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRacjU65XgKFIqTBY97et63NLX-sGjzAjuR2bMuWto3lg&s" alt="profile-img" /> :
+                            <img className='w-[90px] h-[90px] object-cover rounded-full border-4' src={peerData.profilePicture} alt="profile-img" /> :
                             <p className='w-[90px] h-[90px] bg-gray-400 text-2xl text-white flex items-center justify-center rounded-full'>{getFirstLetter(peerData.username)}</p>
                     }
 

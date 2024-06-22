@@ -13,10 +13,13 @@ import { addMessage } from '../state/message/messageSlice';
 import { setOnlineUserData } from '../state/onlineUsers/onlineUsersSlice';
 import toast from 'react-hot-toast';
 import { getCurrentDateAndTime } from '../utils/utils';
+import { USER_API } from '../api/api';
 
 function HomePage() {
+
   const token = useSelector((state: RootState) => state.token.token)
   const peerData = useSelector((state: RootState) => state.peer.data)
+  const userData: any = useSelector((state: RootState) => state.user.user)
   const dispatch = useDispatch<AppDispatch>()
 
   const navigate = useNavigate()
@@ -28,6 +31,7 @@ function HomePage() {
   }
 
   const [messageInp, setMessageInp] = useState<string>('')
+  const [contactDetails, setContactDetails] = useState([])
 
   const socketRef = useRef<Socket | null>(null);
 
@@ -36,6 +40,8 @@ function HomePage() {
     sender: string,
     recipient: string
   }
+
+
 
   // handling message sending
   useEffect(() => {
@@ -46,6 +52,31 @@ function HomePage() {
     }
     handleSendMessage()
   }, [messageInp])
+
+  // fetch user contact details
+  useEffect(() => {
+    if (userData && userData[0]) {
+
+      const contactEmails = userData[0].contacts.map((contact: any) => contact.email).join(',')
+      console.log(contactEmails)
+      const fetchContactDetails = async () => {
+        try {
+          const res = await USER_API.get("/contacts-details", {
+            params: {
+              emails: contactEmails
+            }
+          })
+          console.log("contact details:", res.data.contactDetails)
+          setContactDetails(res.data.contactDetails)
+
+        } catch (err) {
+          console.error("Error in fetching contact detail: ", err)
+        }
+      }
+
+      fetchContactDetails()
+    }
+  }, [userData])
 
   useEffect(() => {
 
@@ -95,6 +126,13 @@ function HomePage() {
         dispatch(addMessage(data))
       })
 
+      socketRef.current.on('updateSocket', (data) => {
+        const { email, socketId } = data
+        console.log(`updated socketId : ${socketId} for ${email}`)
+        
+        setContactDetails((prevContact: any) => prevContact.map((contact: any) => contact.email === email ? { ...contact, socketId } : contact))
+      })
+
       // user connection event
       socketRef.current.on("user-connection", (data: any[]) => {
         console.log('userdata: ', data)
@@ -121,7 +159,7 @@ function HomePage() {
   return (
     <div className="flex sm:flex-row flex-col-reverse sm:justify-start justify-between w-[100%] h-[100vh] bg-[#fff]">
       <NavBar />
-      <AllChats />
+      <AllChats contactDetails={contactDetails} />
       {id ?
         <ChatView setMessageInp={setMessageInp} socketRef={socketRef} /> :
         <div className='sm:flex hidden sm:w-[65%] w-4/4 sm:h-6/6 h-4/4  bg-[#f8faf4] rounded-lg m-2 justify-center shadow-sm sm:shadow-lg items-center'>
