@@ -6,6 +6,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { addMessage } from '../state/message/messageSlice';
 import { Socket } from 'socket.io-client';
 import { getCurrentDateAndTime, getFirstLetter } from '../utils/utils';
+import { USER_API } from '../api/api';
+import toast from 'react-hot-toast';
 
 
 interface ChatViewProps {
@@ -66,6 +68,26 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
     const statusChecker = (onlineUsersData: any, peerEmail: string) => {
         return onlineUsersData[peerEmail] ? true : false
     }
+
+    // For deleting contact
+    const deleteContact = async (email: string) => {
+        try {
+            const res = await USER_API.delete("/delete-contact", {
+                params: {
+                    email: user[0].email,
+                    contactEmail: email
+                }
+            })
+            console.log(res.data)
+            toast.success(res.data)
+            navigate("/")
+            window.location.reload()
+        } catch (err: any) {
+            console.error("Error: ", err)
+            toast.error(err.response.data)
+        }
+    }
+
 
     // handle typing event
     const handleTyping = () => {
@@ -193,15 +215,13 @@ function ChatView({ setMessageInp, socketRef }: ChatViewProps) {
 
                     <p className='font-semibold font-mukta py-2'>{peerData.username}</p>
                     <div className='w-full flex flex-col items-center'>
-
                         <p className='flex justify-center items-center font-mukta w-full'><Icon className='mx-1' icon="ic:outline-email" width="20" height="20" />{peerData.email}</p>
-                        <p className='flex justify-center items-center font-mukta w-full'><Icon className='mr-1' icon="material-symbols:join-outline" width="20" height="20" />connected on 14-5-2024</p>
                         <button className='flex  items-center  h-10 font-poppins font-semibold  transition-all duration-300 ease-in-out  text-red-500 hover:text-red-600 mt-6'><Icon className='mr-1' icon="material-symbols:block" width="20" height="20" />Block</button>
                     </div>
                 </div>
 
                 <div className='w-full flex flex-col items-center h-[20vh]'>
-                    <button className='font-poppins text-sm font-semibold hover:bg-red-600 transition-all duration-300 ease-in-out bg-red-500 text-white p-2 rounded-xl'>Delete contact</button>
+                    <button onClick={() => deleteContact(peerData.email)} className='font-poppins text-sm font-semibold hover:bg-red-600 transition-all duration-300 ease-in-out bg-red-500 text-white p-2 rounded-xl'>Delete contact</button>
                 </div>
             </div>
         </div>)

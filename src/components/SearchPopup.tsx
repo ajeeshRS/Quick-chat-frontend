@@ -50,7 +50,7 @@ function SearchPopup() {
             const res = await USER_API.post("/add-contact", data)
             console.log(res.data)
             toast.success(res.data)
-
+            window.location.reload()
         } catch (err: any) {
             console.error("Error in adding contact: ", err)
             toast.error(err.response.data)
