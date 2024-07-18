@@ -129,7 +129,6 @@ function HomePage() {
       socketRef.current.on('updateSocket', (data) => {
         const { email, socketId } = data
         console.log(`updated socketId : ${socketId} for ${email}`)
-        
         setContactDetails((prevContact: any) => prevContact.map((contact: any) => contact.email === email ? { ...contact, socketId } : contact))
       })
 
@@ -154,6 +153,16 @@ function HomePage() {
     }
 
   }, [token])
+
+  // to change the id(socketId) from the params when contactdetails(socketId of peer changes) changes
+  useEffect(() => {
+    if (location.pathname.startsWith('/chat/')) {
+      const currentContact: any = contactDetails.find((contact: any) => contact.socketId === id || contact.email === peerData.email);
+      if (currentContact && currentContact.socketId !== id) {
+        navigate(`/chat/${currentContact.socketId}`, { state: { data: { ...currentContact, socketId: currentContact.socketId } } });
+      }
+    }
+  }, [contactDetails])
 
 
   return (
